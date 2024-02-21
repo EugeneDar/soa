@@ -1,1 +1,12 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
+Person(user, "Пользователь", "Использует социальную сеть")
+System(main_service, "Главный сервис", "Аутентификация и клиентское API")
+System(stat_service, "Сервис статистики", "Подсчет лайков и просмотров")
+System(post_comment_service, "Сервис постов и комментариев", "Управляет постами и комментариями")
+
+Rel(user, main_service, "Отправляет запросы и информацию")
+Rel(main_service, stat_service, "Отправляет данные о лайках и просмотрах")
+Rel(main_service, post_comment_service, "Отправляет запросы на создание, обновление и удаление постов и комментариев")
+@enduml
