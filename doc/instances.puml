@@ -1,0 +1,43 @@
+@startuml
+
+entity "User" as user {
+  + Id : int
+  --
+  Password: varchar
+  Username : varchar
+}
+
+entity "Post" as post {
+  + Id : int
+  --
+  Title: varchar
+  Body: varchar
+  CreationTime: int
+  # UserId: int
+}
+
+entity "Post Statistic" as postStatistic {
+  + Id : int
+  --
+  # PostId: int
+  LikeCount: int
+  ViewCount: int
+}
+
+entity "Comment" as comment {
+  + Id : int
+  --
+  Body: varchar
+  CreationTime: int
+  # UserId: int
+  # PostId: int
+  # ParentCommentId: int
+}
+
+user ||--o{ post : "Create-Update-Delete"
+post ||--o{ postStatistic : "Has"
+post ||--o{ comment : "Has"
+user ||--o{ comment : "Create-Delete"
+comment ||--o{ comment : "Reply-To"
+
+@enduml
