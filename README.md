@@ -1,2 +1,3 @@
-# soa
-Project for System oriented architectures course
+Выполнил: Дарашкевич Евгений Михайлович, БПМИ216.
+
+Выбранный вариант: Социальная сеть.
