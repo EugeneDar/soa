@@ -1,37 +1,37 @@
 @startuml
 
 entity "User" as user {
-  + Id : int
+  + Id : bigint
   --
   Password: varchar
   Username : varchar
 }
 
 entity "Post" as post {
-  + Id : int
+  + Id : bigint
   --
   Title: varchar
   Body: varchar
   CreationTime: int
-  # UserId: int
+  # UserId: bigint
 }
 
 entity "Post Statistic" as postStatistic {
-  + Id : int
+  + Id : bigint
   --
-  # PostId: int
+  # PostId: bigint
   LikeCount: int
   ViewCount: int
 }
 
 entity "Comment" as comment {
-  + Id : int
+  + Id : bigint
   --
   Body: varchar
   CreationTime: int
-  # UserId: int
-  # PostId: int
-  # ParentCommentId: int
+  # UserId: bigint
+  # PostId: bigint
+  # ParentCommentId: bigint
 }
 
 user ||--o{ post : "Create-Update-Delete"
