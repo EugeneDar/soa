@@ -1,1 +1,13 @@
 
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "Пользователь", "Использует социальную сеть")
+Person(admin, "Администратор", "Управляет системой")
+System_Ext(api, "Внешние API", "Взаимодействует с социальной сетью")
+System(social_net, "Социальная сеть", "Управляет активностями пользователя и предоставляет социальные сетевые услуги")
+
+Rel(user, social_net, "Отправляет запросы и информацию")
+Rel(admin, social_net, "Отправляет команды управления")
+Rel(social_net, api, "Использует для дополнительных возможностей")
+@enduml

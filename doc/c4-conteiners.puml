@@ -1,0 +1,22 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Container(main_api, "Главный сервис", "Python", "Отвечает за клиентское API, аутентификацию и регистрацию пользователей")
+ContainerDb(main_db, "Главная БД", "MySQL", "Хранит данные пользователей, аутентификационные данные")
+Container(stat_api, "Сервис статистики", "Python", "API для подсчета лайков и просмотров")
+ContainerDb(stat_db, "БД статистики", "ClickHouse", "Хранит статистику лайков и просмотров")
+Container(post_api, "Сервис постов и комментариев", "Go", "API для работы с постами и комментариями")
+ContainerDb(post_db, "БД постов и комментариев", "MySQL", "Хранит посты и комментарии")
+Container(kafka, "Брокер сообщений", "Kafka", "Передает события с просмотрами и лайками в сервис статистики")
+Container(frontend, "Фронтенд", "React", "Пользовательский интерфейс для социальной сети")
+
+Rel(main_api, main_db, "Чтение/Запись")
+Rel(main_api, stat_api, "gRPC")
+Rel(main_api, post_api, "gRPC")
+Rel(stat_api, stat_db, "Чтение/Запись")
+Rel(post_api, post_db, "Чтение/Запись")
+Rel(frontend, main_api, "REST API")
+Rel(kafka, stat_api, "Producer")
+Rel(main_api, kafka, "Consumer")
+
+@enduml
