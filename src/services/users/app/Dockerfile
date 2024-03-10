@@ -5,7 +5,7 @@ WORKDIR /app
 COPY .. .
 
 # TODO use versions in requirements.txt file
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Make port available to the world outside this container
 #EXPOSE 5000

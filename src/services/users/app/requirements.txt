@@ -5,6 +5,6 @@ Flask
 flask-sqlalchemy
 Flask-JWT-Extended
 Flask-Cors
-mysqlclient==2.0.3
-PyMySQL==1.0.2
-marshmallow-sqlalchemy==0.23.1
+mysqlclient
+PyMySQL
+marshmallow-sqlalchemy

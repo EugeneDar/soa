@@ -1,9 +1,9 @@
-from flask_sqlalchemy import SQLAlchemy
-from datetime import date
+import sys
+sys.path.append("..")
 
-MAX_FIELD_SIZE = 100
+from database.database import db
 
-db = SQLAlchemy()
+MAX_FIELD_SIZE = 1024
 
 
 class User(db.Model):
