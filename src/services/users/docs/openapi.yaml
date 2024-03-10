@@ -22,6 +22,8 @@ paths:
       responses:
         201:
           description: User created successfully
+        400:
+          description: Username is already taken
   /login:
     post:
       summary: Log in to the application
@@ -57,9 +59,16 @@ paths:
             schema:
               type: object
               properties:
-                username:
+                name:
                   type: string
-                password:
+                surname:
+                  type: string
+                birthdate:
+                  type: string
+                  format: date
+                email:
+                  type: string
+                phone:
                   type: string
       responses:
         200:
