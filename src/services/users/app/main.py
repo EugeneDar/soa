@@ -1,18 +1,20 @@
+import os
+
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from util import get_field
+from util.util import get_field
 from models.user import User
 from schemas.user_schema import UserSchema
 
-app = Flask(name)
+app = Flask(__name__)
 CORS(app)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://user:password@db/usersdb"
-app.config["JWT_SECRET_KEY"] = "super_jwt_secret_key"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+app.config["JWT_SECRET_KEY"] = os.environ.get('JWT_SECRET_KEY')
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
@@ -25,9 +27,9 @@ def create_user():
     new_user = user_schema.load(user_details)
 
     password = generate_password_hash(user_details.get('password'))
-    new_user.password = password
+    new_user['password'] = password
 
-    existing_user = User.query.filter_by(username=new_user.username).first()
+    existing_user = User.query.filter_by(username=new_user['username']).first()
     if existing_user is not None:
         return jsonify(message="User with such username already exists."), 400
 
@@ -64,6 +66,7 @@ def update_user(id):
     return jsonify(user_schema.dump(user))
 
 
-if name == "main":
-    db.create_all()
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(host='0.0.0.0', debug=True)
