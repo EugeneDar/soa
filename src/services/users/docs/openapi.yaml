@@ -73,5 +73,7 @@ paths:
       responses:
         200:
           description: User updated successfully
+        401:
+          description: Unauthorized request
         404:
           description: User not found
