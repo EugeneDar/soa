@@ -1,0 +1,79 @@
+openapi: 3.0.1
+info:
+  title: User Management API
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/
+paths:
+  /signup:
+    post:
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        201:
+          description: User created successfully
+        400:
+          description: Username is already taken
+  /login:
+    post:
+      summary: Log in to the application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Log-in successful
+        401:
+          description: Invalid credentials
+  /users/{id}:
+    put:
+      summary: Update a user's details
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                surname:
+                  type: string
+                birthdate:
+                  type: string
+                  format: date
+                email:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        200:
+          description: User updated successfully
+        401:
+          description: Unauthorized request
+        404:
+          description: User not found

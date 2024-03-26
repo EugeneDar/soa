@@ -1,0 +1,9 @@
+### New user creation (already exist if repeat)
+POST http://localhost:8000/signup
+Content-Type: application/json
+
+{
+    "username": "JohnSnow",
+    "password": "abac0ba"
+}
+

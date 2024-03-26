@@ -1,0 +1,21 @@
+### Update all user's data
+PUT http://localhost:8000/users/JohnSnow
+Content-Type: application/json
+Authorization: Bearer <access_token>
+
+{
+    "name": "John",
+    "surname": "Snow",
+    "birthdate": "1813-03-15",
+    "email": "gameofthrones@gmail.com",
+    "phone": "+88005353535"
+}
+
+### Update user's email
+PUT http://localhost:8000/users/JohnSnow
+Content-Type: application/json
+Authorization: Bearer <access_token>
+
+{
+    "email": "somewhere@mail.ru"
+}

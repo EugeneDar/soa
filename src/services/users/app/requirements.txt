@@ -1,0 +1,10 @@
+Jinja2
+markupsafe
+itsdangerous
+Flask
+flask-sqlalchemy
+Flask-JWT-Extended
+Flask-Cors
+mysqlclient
+PyMySQL
+marshmallow-sqlalchemy

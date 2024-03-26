@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  users_db:
+    platform: linux/x86_64
+    image: mysql:5.7
+    restart: always
+    environment: # TODO do not store parameters publicly
+      MYSQL_DATABASE: 'usersdb'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    volumes:
+      - db_data:/var/lib/mysql
+
+  users-service:
+    build: ./app
+    volumes:
+      - .:/app
+    ports:
+      - "8000:5000"
+    depends_on:
+      - users_db
+    environment: # TODO do not store parameters publicly
+      SQLALCHEMY_DATABASE_URI: "mysql+pymysql://user:password@users_db/usersdb"
+      JWT_SECRET_KEY : "super_jwt_secret_key"
+
+volumes:
+  db_data:
