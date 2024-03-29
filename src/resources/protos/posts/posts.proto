@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package posts;
+
+option go_package = "/posts";
+
+service PostService {
+ rpc CreatePost (CreatePostRequest) returns (Post) {}
+ rpc UpdatePost (UpdatePostRequest) returns (Post) {}
+ rpc DeletePost (DeletePostRequest) returns (Post) {}
+ rpc GetPostById (GetPostByIdRequest) returns (Post) {}
+ rpc ListPosts (ListPostsRequest) returns (ListPostsResponse) {}
+}
+
+message Post {
+ int64 id = 1;
+ string title = 2;
+ string body = 3;
+ int64 creation_time = 4;
+ int64 user_id = 5;
+}
+
+message CreatePostRequest {
+ string title = 1;
+ string body = 2;
+ int64 user_id = 3;
+}
+
+message UpdatePostRequest {
+ int64 id = 1;
+ string title = 2;
+ string body = 3;
+}
+
+message DeletePostRequest {
+ int64 id = 1;
+}
+
+message GetPostByIdRequest {
+ int64 id = 1;
+}
+
+message ListPostsRequest {
+ int32 page = 1;
+ int32 page_size = 2;
+}
+
+message ListPostsResponse {
+ repeated Post posts = 1;
+ int32 total_count = 2;
+}

@@ -1,0 +1,2 @@
+### Update Post
+grpcurl -proto ../../../resources/protos/posts/posts.proto -d '{"id": 1, "title": "Updated Post", "body": "This post has been updated"}' -plaintext localhost:5300 posts.PostService/UpdatePost

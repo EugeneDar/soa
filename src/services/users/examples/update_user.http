@@ -1,7 +1,7 @@
 ### Update all user's data
 PUT http://localhost:8000/users/JohnSnow
 Content-Type: application/json
-Authorization: Bearer <access_token>
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxMTc1MjQwOSwianRpIjoiNzUzNDlmNDgtOGFmZS00MjUzLWE5ODMtYmJlZWE3NmFiNWIwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IkpvaG5Tbm93IiwibmJmIjoxNzExNzUyNDA5LCJjc3JmIjoiZWEwYjM5ZGMtNWQ2OC00OTk4LWE5MjAtYmRhNTUyMGU5NzZiIiwiZXhwIjoxNzExNzUzMzA5fQ.LG8pJgCBvSySl05LLeRCsQjLseoI8cW6f6I8qboiRcw
 
 {
     "name": "John",
@@ -14,7 +14,7 @@ Authorization: Bearer <access_token>
 ### Update user's email
 PUT http://localhost:8000/users/JohnSnow
 Content-Type: application/json
-Authorization: Bearer <access_token>
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxMTc1MjQwOSwianRpIjoiNzUzNDlmNDgtOGFmZS00MjUzLWE5ODMtYmJlZWE3NmFiNWIwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IkpvaG5Tbm93IiwibmJmIjoxNzExNzUyNDA5LCJjc3JmIjoiZWEwYjM5ZGMtNWQ2OC00OTk4LWE5MjAtYmRhNTUyMGU5NzZiIiwiZXhwIjoxNzExNzUzMzA5fQ.LG8pJgCBvSySl05LLeRCsQjLseoI8cW6f6I8qboiRcw
 
 {
     "email": "somewhere@mail.ru"

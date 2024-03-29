@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt
 # Make port available to the world outside this container
 #EXPOSE 5000
 
-CMD [ "python", "./app/main.py" ]
+CMD [ "python", "./users/app/main.py" ]

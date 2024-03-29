@@ -1,0 +1,9 @@
+### Create post
+POST http://localhost:8000/posts
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxMTc1MjQwOSwianRpIjoiNzUzNDlmNDgtOGFmZS00MjUzLWE5ODMtYmJlZWE3NmFiNWIwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IkpvaG5Tbm93IiwibmJmIjoxNzExNzUyNDA5LCJjc3JmIjoiZWEwYjM5ZGMtNWQ2OC00OTk4LWE5MjAtYmRhNTUyMGU5NzZiIiwiZXhwIjoxNzExNzUzMzA5fQ.LG8pJgCBvSySl05LLeRCsQjLseoI8cW6f6I8qboiRcw
+
+{
+  "title": "My First Post",
+  "body": "This is the body of my first post."
+}
