@@ -3,74 +3,111 @@ package main
 import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
 	"net"
+	"sync"
+	"time"
 
 	pb "grpc-server/api/posts"
 )
 
 type postServer struct {
 	pb.UnimplementedPostServiceServer
-	// Здесь можно добавить необходимые зависимости, например, доступ к базе данных
+	mu    sync.Mutex
+	posts []*pb.Post
 }
 
 func (s *postServer) CreatePost(ctx context.Context, req *pb.CreatePostRequest) (*pb.Post, error) {
-	// Логика создания нового поста
-	// ...
-	return &pb.Post{
-		Id:           1,
-		Title:        req.Title,
-		Body:         req.Body,
-		CreationTime: 123456789,
-		UserId:       req.UserId,
-	}, nil
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	post := &pb.Post{
+		Id:        int64(len(s.posts) + 1),
+		Title:     req.Title,
+		Content:   req.Content,
+		UserId:    req.UserId,
+		CreatedAt: time.Now().Unix(),
+		UpdatedAt: time.Now().Unix(),
+	}
+
+	s.posts = append(s.posts, post)
+
+	return post, nil
 }
 
 func (s *postServer) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*pb.Post, error) {
-	// Логика обновления поста
-	// ...
-	return &pb.Post{
-		Id:           req.Id,
-		Title:        req.Title,
-		Body:         req.Body,
-		CreationTime: 123456789,
-		UserId:       1,
-	}, nil
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	for _, post := range s.posts {
+		if post.Id == req.Id {
+			if post.UserId != req.UserId {
+				return nil, grpc.Errorf(codes.PermissionDenied, "you are not allowed to update this post")
+			}
+			post.Title = req.Title
+			post.Content = req.Content
+			post.UpdatedAt = time.Now().Unix()
+			return post, nil
+		}
+	}
+
+	return nil, grpc.Errorf(codes.NotFound, "post not found")
 }
 
-func (s *postServer) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*pb.Post, error) {
-	// Логика удаления поста
-	// ...
-	return &pb.Post{
-		Id:           req.Id,
-		Title:        "Post Title",
-		Body:         "Post Body",
-		CreationTime: 123456789,
-		UserId:       1,
-	}, nil
+func (s *postServer) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*pb.DeletePostResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	for i, post := range s.posts {
+		if post.Id == req.Id {
+			if post.UserId != req.UserId {
+				return nil, grpc.Errorf(codes.PermissionDenied, "you are not allowed to delete this post")
+			}
+			s.posts = append(s.posts[:i], s.posts[i+1:]...)
+			return &pb.DeletePostResponse{Success: true}, nil
+		}
+	}
+
+	return nil, grpc.Errorf(codes.NotFound, "post not found")
 }
 
 func (s *postServer) GetPostById(ctx context.Context, req *pb.GetPostByIdRequest) (*pb.Post, error) {
-	// Логика получения поста по ID
-	// ...
-	return &pb.Post{
-		Id:           req.Id,
-		Title:        "Post Title",
-		Body:         "Post Body",
-		CreationTime: 123456789,
-		UserId:       1,
-	}, nil
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	for _, post := range s.posts {
+		if post.Id == req.Id {
+			if post.UserId != req.UserId {
+				return nil, grpc.Errorf(codes.PermissionDenied, "you are not allowed to access this post")
+			}
+			return post, nil
+		}
+	}
+
+	return nil, grpc.Errorf(codes.NotFound, "post not found")
 }
 
 func (s *postServer) ListPosts(ctx context.Context, req *pb.ListPostsRequest) (*pb.ListPostsResponse, error) {
-	// Логика получения списка постов с пагинацией
-	// ...
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	var posts []*pb.Post
+	for _, post := range s.posts {
+		if post.UserId == req.UserId {
+			posts = append(posts, post)
+		}
+	}
+
+	offset := (req.Page - 1) * req.Limit
+	limit := int(offset) + int(req.Limit)
+	if limit > len(posts) {
+		limit = len(posts)
+	}
+
 	return &pb.ListPostsResponse{
-		Posts: []*pb.Post{
-			{Id: 1, Title: "Post 1", Body: "Body 1", CreationTime: 123456789, UserId: 1},
-			{Id: 2, Title: "Post 2", Body: "Body 2", CreationTime: 987654321, UserId: 2},
-		},
-		TotalCount: 2,
+		Posts:      posts[offset:limit],
+		TotalCount: int64(len(posts)),
 	}, nil
 }
 

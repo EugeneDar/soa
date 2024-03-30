@@ -7,7 +7,7 @@ option go_package = "/posts";
 service PostService {
  rpc CreatePost (CreatePostRequest) returns (Post) {}
  rpc UpdatePost (UpdatePostRequest) returns (Post) {}
- rpc DeletePost (DeletePostRequest) returns (Post) {}
+ rpc DeletePost (DeletePostRequest) returns (DeletePostResponse) {}
  rpc GetPostById (GetPostByIdRequest) returns (Post) {}
  rpc ListPosts (ListPostsRequest) returns (ListPostsResponse) {}
 }
@@ -15,37 +15,46 @@ service PostService {
 message Post {
  int64 id = 1;
  string title = 2;
- string body = 3;
- int64 creation_time = 4;
- int64 user_id = 5;
+ string content = 3;
+ int64 user_id = 4;
+ int64 created_at = 5;
+ int64 updated_at = 6;
 }
 
 message CreatePostRequest {
  string title = 1;
- string body = 2;
+ string content = 2;
  int64 user_id = 3;
 }
 
 message UpdatePostRequest {
  int64 id = 1;
  string title = 2;
- string body = 3;
+ string content = 3;
+ int64 user_id = 4;
 }
 
 message DeletePostRequest {
  int64 id = 1;
+ int64 user_id = 2;
+}
+
+message DeletePostResponse {
+ bool success = 1;
 }
 
 message GetPostByIdRequest {
  int64 id = 1;
+ int64 user_id = 2;
 }
 
 message ListPostsRequest {
- int32 page = 1;
- int32 page_size = 2;
+ int64 user_id = 1;
+ int32 page = 2;
+ int32 limit = 3;
 }
 
 message ListPostsResponse {
  repeated Post posts = 1;
- int32 total_count = 2;
+ int64 total_count = 2;
 }
