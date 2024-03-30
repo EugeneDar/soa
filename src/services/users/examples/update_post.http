@@ -1,0 +1,9 @@
+### Update Post
+PUT http://localhost:8000/posts/<post_id>
+Content-Type: application/json
+Authorization: Bearer <access_token>
+
+{
+  "title": "Updated Post",
+  "content": "This is the updated content of the post."
+}

@@ -1,2 +1,3 @@
-### Get post by it's id
-GET http://localhost:8000/posts/1
+### Get Post by ID
+GET http://localhost:8000/posts/<post_id>
+Authorization: Bearer <access_token>

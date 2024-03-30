@@ -6,7 +6,7 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from flask_cors import CORS
 
 from database.database import db
-from util.util import get_field, password_hasher, connect_to_db
+from util.util import get_field, password_hasher, connect_to_db, proto_post_to_dict
 from schemas.user_schema import UserSchema
 from api.posts.posts_pb2 import CreatePostRequest, UpdatePostRequest, DeletePostRequest, GetPostByIdRequest, ListPostsRequest
 from api.posts.posts_pb2_grpc import PostServiceStub
@@ -80,65 +80,95 @@ def update_user(username):
 @jwt_required()
 def create_post():
     post_details = request.json
-    username = get_jwt_identity()
-    user = User.query.filter_by(username=username).first()
-    if user is None:
-        return jsonify(message="User not found"), 404
+    user_id = User.query.filter_by(username=get_jwt_identity()).first().id
 
     with grpc.insecure_channel('posts-service:5300') as channel:
         stub = PostServiceStub(channel)
         response = stub.CreatePost(CreatePostRequest(
-            title=post_details.get('title', ''),
-            body=post_details.get('body', ''),
-            user_id=user.id
+            title=post_details['title'],
+            content=post_details['content'],
+            user_id=user_id
         ))
-        return jsonify(dict(response)), 201
+
+    return jsonify(proto_post_to_dict(response)), 201
 
 
-@app.route("/posts/<int:post_id>", methods=["PUT"])
+@app.route("/posts/<post_id>", methods=["PUT"])
 @jwt_required()
 def update_post(post_id):
     post_details = request.json
+    user_id = User.query.filter_by(username=get_jwt_identity()).first().id
+
     with grpc.insecure_channel('posts-service:5300') as channel:
         stub = PostServiceStub(channel)
         response = stub.UpdatePost(UpdatePostRequest(
             id=post_id,
-            title=post_details.get('title', ''),
-            body=post_details.get('body', '')
+            title=post_details['title'],
+            content=post_details['content'],
+            user_id=user_id
         ))
-        return jsonify(dict(response))
+
+    return jsonify(proto_post_to_dict(response))
 
 
-@app.route("/posts/<int:post_id>", methods=["DELETE"])
+@app.route("/posts/<post_id>", methods=["DELETE"])
 @jwt_required()
 def delete_post(post_id):
+    user_id = User.query.filter_by(username=get_jwt_identity()).first().id
+
     with grpc.insecure_channel('posts-service:5300') as channel:
         stub = PostServiceStub(channel)
-        response = stub.DeletePost(DeletePostRequest(id=post_id))
-        return jsonify(dict(response))
+        response = stub.DeletePost(DeletePostRequest(
+            id=post_id,
+            user_id=user_id
+        ))
+
+    return jsonify({
+        'success': response.success
+    })
 
 
-@app.route("/posts/<int:post_id>", methods=["GET"])
+@app.route("/posts/<post_id>", methods=["GET"])
+@jwt_required()
 def get_post_by_id(post_id):
-    with grpc.insecure_channel('grpc-server:5300') as channel:
+    user_id = User.query.filter_by(username=get_jwt_identity()).first().id
+
+    with grpc.insecure_channel('posts-service:5300') as channel:
         stub = PostServiceStub(channel)
-        response = stub.GetPostById(
-            GetPostByIdRequest(id=post_id))
-        return jsonify(dict(response))
+        response = stub.GetPostById(GetPostByIdRequest(
+            id=post_id,
+            user_id=user_id
+        ))
+
+    return jsonify(proto_post_to_dict(response))
 
 
 @app.route("/posts", methods=["GET"])
+@jwt_required()
 def list_posts():
-    page = int(request.args.get('page', 1))
-    page_size = int(request.args.get('page_size', 10))
-    with grpc.insecure_channel('grpc-server:5300') as channel:
+    user_id = User.query.filter_by(username=get_jwt_identity()).first().id
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=10, type=int)
+
+    with grpc.insecure_channel('posts-service:5300') as channel:
         stub = PostServiceStub(channel)
         response = stub.ListPosts(ListPostsRequest(
+            user_id=user_id,
             page=page,
-            page_size=page_size
+            limit=limit
         ))
-        posts = [dict(post) for post in response.posts]
-        return jsonify(posts=posts, total_count=response.total_count)
+
+    posts = [
+        proto_post_to_dict(post)
+        for post in response.posts
+    ]
+
+    return jsonify({
+        'posts': posts,
+        'total_count': response.total_count,
+        'page': page,
+        'limit': limit
+    })
 
 
 if __name__ == "__main__":

@@ -1,9 +1,19 @@
 ### Create post
 POST http://localhost:8000/posts
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxMTc1MjQwOSwianRpIjoiNzUzNDlmNDgtOGFmZS00MjUzLWE5ODMtYmJlZWE3NmFiNWIwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IkpvaG5Tbm93IiwibmJmIjoxNzExNzUyNDA5LCJjc3JmIjoiZWEwYjM5ZGMtNWQ2OC00OTk4LWE5MjAtYmRhNTUyMGU5NzZiIiwiZXhwIjoxNzExNzUzMzA5fQ.LG8pJgCBvSySl05LLeRCsQjLseoI8cW6f6I8qboiRcw
+Authorization: Bearer <access_token>
 
 {
-  "title": "My First Post",
-  "body": "This is the body of my first post."
+  "title": "My Post",
+  "content": "This is the content of my post."
+}
+
+### Create other post
+POST http://localhost:8000/posts
+Content-Type: application/json
+Authorization: Bearer <access_token>
+
+{
+  "title": "My other post",
+  "content": "Some text here."
 }
