@@ -27,3 +27,14 @@ def connect_to_db(db, app, retries=10, delay=2):
             time.sleep(delay)
 
     raise Exception('Can not connect to DB')
+
+
+def proto_post_to_dict(proto_post):
+    return {
+        'id': proto_post.id,
+        'title': proto_post.title,
+        'content': proto_post.content,
+        'user_id': proto_post.user_id,
+        'created_at': proto_post.created_at,
+        'updated_at': proto_post.updated_at
+    }

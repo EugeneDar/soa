@@ -1,0 +1,19 @@
+### Create post
+POST http://localhost:8000/posts
+Content-Type: application/json
+Authorization: Bearer <access_token>
+
+{
+  "title": "My Post",
+  "content": "This is the content of my post."
+}
+
+### Create other post
+POST http://localhost:8000/posts
+Content-Type: application/json
+Authorization: Bearer <access_token>
+
+{
+  "title": "My other post",
+  "content": "Some text here."
+}

@@ -1,4 +1,6 @@
 Jinja2
+grpcio
+protobuf
 markupsafe
 itsdangerous
 Flask

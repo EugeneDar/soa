@@ -7,3 +7,13 @@ Content-Type: application/json
     "password": "abac0ba"
 }
 
+### New user creation
+POST http://localhost:8000/signup
+Content-Type: application/json
+
+{
+  "username": "Eugene",
+  "password": "1234"
+}
+
+

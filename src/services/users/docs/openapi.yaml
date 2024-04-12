@@ -77,3 +77,123 @@ paths:
           description: Unauthorized request
         404:
           description: User not found
+  /posts:
+    post:
+      summary: Create a new post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+      responses:
+        201:
+          description: Post created successfully
+        401:
+          description: Unauthorized request
+    get:
+      summary: List posts with pagination
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Number of posts per page
+      responses:
+        200:
+          description: Posts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        title:
+                          type: string
+                        content:
+                          type: string
+                        user_id:
+                          type: integer
+                  total_count:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+        401:
+          description: Unauthorized request
+  /posts/{id}:
+    put:
+      summary: Update a post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+      responses:
+        200:
+          description: Post updated successfully
+        401:
+          description: Unauthorized request
+        404:
+          description: Post not found
+    delete:
+      summary: Delete a post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Post deleted successfully
+        401:
+          description: Unauthorized request
+        404:
+          description: Post not found
+    get:
+      summary: Get a post by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Post retrieved successfully
+        401:
+          description: Unauthorized request
+        404:
+          description: Post not found

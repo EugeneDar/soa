@@ -13,16 +13,33 @@ services:
       - db_data:/var/lib/mysql
 
   users-service:
-    build: ./app
+    build: users/app
     volumes:
       - .:/app
     ports:
       - "8000:5000"
     depends_on:
       - users_db
+      - posts-service
     environment: # TODO do not store parameters publicly
       SQLALCHEMY_DATABASE_URI: "mysql+pymysql://user:password@users_db/usersdb"
       JWT_SECRET_KEY : "super_jwt_secret_key"
 
+  posts_db:
+    image: mongo:latest
+    restart: always
+    volumes:
+      - posts_db_data:/data/db
+
+  posts-service:
+    build: ./posts/app
+    ports:
+      - "5300:5300"
+    depends_on:
+      - posts_db
+    environment:
+      MONGODB_URI: "mongodb://posts_db:27017"
+
 volumes:
   db_data:
+  posts_db_data:
