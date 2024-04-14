@@ -10,3 +10,4 @@ Flask-Cors
 mysqlclient
 PyMySQL
 marshmallow-sqlalchemy
+kafka-python
