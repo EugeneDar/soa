@@ -170,6 +170,20 @@ def list_posts():
         'limit': limit
     })
 
+@app.route("/posts/<post_id>/views", methods=["POST"])
+@jwt_required()
+def add_post_view(post_id):
+    # TODO
+    return jsonify({'success': True})
+
+
+@app.route("/posts/<post_id>/likes", methods=["POST"])
+@jwt_required()
+def add_post_like(post_id):
+    # TODO
+    return jsonify({'success': True})
+
+
 
 if __name__ == "__main__":
     connect_to_db(db, app)
