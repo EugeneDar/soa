@@ -55,7 +55,11 @@ def login():
         return jsonify(message="Invalid credentials"), 401
 
     access_token = create_access_token(identity=username)
-    return jsonify(access_token=access_token)
+
+    return jsonify({
+        'access_token': access_token,
+        'user_id': user.id
+    })
 
 
 @app.route("/users/<username>", methods=["PUT"])
@@ -131,13 +135,10 @@ def delete_post(post_id):
 @app.route("/posts/<post_id>", methods=["GET"])
 @jwt_required()
 def get_post_by_id(post_id):
-    user_id = User.query.filter_by(username=get_jwt_identity()).first().id
-
     with grpc.insecure_channel('posts-service:5300') as channel:
         stub = PostServiceStub(channel)
         response = stub.GetPostById(GetPostByIdRequest(
-            id=post_id,
-            user_id=user_id
+            id=post_id
         ))
 
     return jsonify(proto_post_to_dict(response))
@@ -146,14 +147,13 @@ def get_post_by_id(post_id):
 @app.route("/posts", methods=["GET"])
 @jwt_required()
 def list_posts():
-    user_id = User.query.filter_by(username=get_jwt_identity()).first().id
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=10, type=int)
 
     with grpc.insecure_channel('posts-service:5300') as channel:
         stub = PostServiceStub(channel)
         response = stub.ListPosts(ListPostsRequest(
-            user_id=user_id,
+            user_id=request.json['user_id'],
             page=page,
             limit=limit
         ))

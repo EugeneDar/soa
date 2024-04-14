@@ -97,7 +97,7 @@ func (s *postServer) GetPostById(ctx context.Context, req *pb.GetPostByIdRequest
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	filter := bson.M{"id": req.Id, "userid": req.UserId}
+	filter := bson.M{"id": req.Id}
 
 	var post pb.Post
 	if err := s.collection.FindOne(ctx, filter).Decode(&post); err != nil {
