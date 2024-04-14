@@ -27,6 +27,11 @@ user_schema = UserSchema()
 producer = None  # init in main
 
 
+@app.route('/healthcheck')
+def healthcheck():
+    return jsonify({'status': 'OK'})
+
+
 @app.route("/signup", methods=["POST"])
 def create_user():
     user_details = request.json
