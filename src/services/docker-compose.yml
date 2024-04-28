@@ -65,6 +65,13 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
 
+  statistics-service:
+    build: statistics/app
+    ports:
+      - "5100:5100"
+    depends_on:
+      - kafka
+#      - clickhouse
 
 volumes:
   db_data:
