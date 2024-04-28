@@ -1,6 +1,7 @@
 import os
 import json
 import grpc
+from datetime import datetime
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_cors import CORS
@@ -183,7 +184,8 @@ def list_posts():
 @jwt_required()
 def add_post_view(post_id):
     message = {
-        'post_id': post_id
+        'post_id': post_id,
+        'viewed_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
     producer.send('post_views', message)
     return jsonify({'success': True})
@@ -193,7 +195,8 @@ def add_post_view(post_id):
 @jwt_required()
 def add_post_like(post_id):
     message = {
-        'post_id': post_id
+        'post_id': post_id,
+        'liked_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
     producer.send('post_likes', message)
     return jsonify({'success': True})
