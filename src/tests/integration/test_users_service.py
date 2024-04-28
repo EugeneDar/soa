@@ -8,6 +8,7 @@ from testcontainers.compose import DockerCompose
 compose_file_path = os.path.abspath('../services')
 
 
+# TODO copy compose file, change ports, use it, than delete in tearDownClass call
 class UserServiceTests(unittest.TestCase):
     container = None
     users_service_url = None
