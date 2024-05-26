@@ -183,12 +183,12 @@ def list_posts():
 @app.route("/posts/<post_id>/views", methods=["POST"])
 @jwt_required()
 def add_post_view(post_id):
-    username = User.query.filter_by(username=get_jwt_identity()).first().username
+    id = User.query.filter_by(username=get_jwt_identity()).first().id
 
     message = {
         'post_id': post_id,
         'viewed_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'event_author': username
+        'event_author': id
     }
     producer.send('post_views', message)
     return jsonify({'success': True})
@@ -197,12 +197,12 @@ def add_post_view(post_id):
 @app.route("/posts/<post_id>/likes", methods=["POST"])
 @jwt_required()
 def add_post_like(post_id):
-    username = User.query.filter_by(username=get_jwt_identity()).first().username
+    id = User.query.filter_by(username=get_jwt_identity()).first().id
 
     message = {
         'post_id': post_id,
         'liked_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'event_author': username
+        'event_author': id
     }
     producer.send('post_likes', message)
     return jsonify({'success': True})
