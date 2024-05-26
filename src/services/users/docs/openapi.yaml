@@ -197,3 +197,51 @@ paths:
           description: Unauthorized request
         404:
           description: Post not found
+  /posts/<post_id>/views:
+    post:
+      summary: Add a view to a post
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: View added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        401:
+          description: Unauthorized request
+        404:
+          description: Post not found
+  /posts/<post_id>/likes:
+    post:
+      summary: Add a like to a post
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Like added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        401:
+          description: Unauthorized request
+        404:
+          description: Post not found

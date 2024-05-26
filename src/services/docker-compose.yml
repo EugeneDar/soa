@@ -21,9 +21,11 @@ services:
     depends_on:
       - users_db
       - posts-service
+      - kafka
     environment: # TODO do not store parameters publicly
       SQLALCHEMY_DATABASE_URI: "mysql+pymysql://user:password@users_db/usersdb"
       JWT_SECRET_KEY : "super_jwt_secret_key"
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:29092"
 
   posts_db:
     image: mongo:latest
@@ -40,6 +42,46 @@ services:
     environment:
       MONGODB_URI: "mongodb://posts_db:27017"
 
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - kafka_data:/var/lib/kafka
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    ports:
+      - "8123:8123"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+
+  statistics-service:
+    build: statistics/app
+    ports:
+      - "5100:5100"
+    depends_on:
+      - kafka
+      - clickhouse
+
 volumes:
   db_data:
   posts_db_data:
+  kafka_data:
+  clickhouse_data:
