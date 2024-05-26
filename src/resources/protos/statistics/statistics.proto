@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package statistics;
+
+service StatisticsService {
+    rpc GetTotalViewsAndLikes(ViewsAndLikesRequest) returns (ViewsAndLikesResponse);
+    rpc GetTopPosts(TopPostsRequest) returns (TopPostsResponse);
+    rpc GetTopUsers(Empty) returns (TopUsersResponse);
+}
+
+message ViewsAndLikesRequest {
+    string post_id = 1;
+}
+
+message ViewsAndLikesResponse {
+    int64 views = 1;
+    int64 likes = 2;
+}
+
+message TopPostsRequest {
+    enum SortBy {
+        LIKES = 0;
+        VIEWS = 1;
+    }
+    SortBy sort_by = 1;
+}
+
+message Post {
+    string post_id = 1;
+    int64 views = 3;
+    int64 likes = 4;
+}
+
+message TopPostsResponse {
+    repeated Post posts = 1;
+}
+
+message User {
+    string user_id = 1;
+    int64 views = 2;
+    int64 likes = 3;
+}
+
+message TopUsersResponse {
+    repeated User users = 1;
+}
+
+message Empty {}
