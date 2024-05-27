@@ -11,20 +11,18 @@ from api.statistics.statistics_pb2 import (
 )
 from api.statistics.statistics_pb2_grpc import StatisticsServiceServicer, add_StatisticsServiceServicer_to_server
 from util.util import clickhouse_request
-from util.templates import GET_TOP_POSTS_TEMPLATE
+from util.templates import (
+    GET_TOTAL_VIEWS_AND_LIKES_TEMPLATE,
+    GET_TOP_POSTS_TEMPLATE
+)
 
 
 class StatisticsService(StatisticsServiceServicer):
 
     def GetTotalViewsAndLikes(self, request, context):
-        # if post:
-        #     return ViewsAndLikesResponse(post_id=request.post_id, views=post["views"], likes=post["likes"])
-        # else:
-        #     context.set_code(grpc.StatusCode.NOT_FOUND)
-        #     context.set_details('Post not found')
-        #     return ViewsAndLikesResponse()
-
-        return ViewsAndLikesResponse(views=1, likes=2)
+        query = GET_TOTAL_VIEWS_AND_LIKES_TEMPLATE.format(post_id=request.post_id)
+        result = clickhouse_request(query)
+        return ViewsAndLikesResponse(views=int(result[0][0]), likes=int(result[0][1]))
 
     def GetTopPosts(self, request, context):
         if request.sort_by == TopPostsRequest.LIKES:
