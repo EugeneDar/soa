@@ -28,6 +28,15 @@ user_schema = UserSchema()
 producer = None  # init in main
 
 
+# TODO move this function to the separate file
+def call_grpc_get_post_by_id(post_id):
+    with grpc.insecure_channel('posts-service:5300') as channel:
+        stub = PostServiceStub(channel)
+        return stub.GetPostById(GetPostByIdRequest(
+            id=post_id
+        ))
+
+
 @app.route('/healthcheck')
 def healthcheck():
     return jsonify({'status': 'OK'})
@@ -144,12 +153,7 @@ def delete_post(post_id):
 @app.route("/posts/<post_id>", methods=["GET"])
 @jwt_required()
 def get_post_by_id(post_id):
-    with grpc.insecure_channel('posts-service:5300') as channel:
-        stub = PostServiceStub(channel)
-        response = stub.GetPostById(GetPostByIdRequest(
-            id=post_id
-        ))
-
+    response = call_grpc_get_post_by_id(post_id)
     return jsonify(proto_post_to_dict(response))
 
 
@@ -183,12 +187,14 @@ def list_posts():
 @app.route("/posts/<post_id>/views", methods=["POST"])
 @jwt_required()
 def add_post_view(post_id):
-    id = User.query.filter_by(username=get_jwt_identity()).first().id
+    event_author_id = User.query.filter_by(username=get_jwt_identity()).first().id
+    post_author_id = call_grpc_get_post_by_id(post_id).user_id
 
     message = {
         'post_id': post_id,
+        'post_author_id': post_author_id,
         'viewed_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'event_author': id
+        'event_author_id': event_author_id
     }
     producer.send('post_views', message)
     return jsonify({'success': True})
@@ -197,12 +203,14 @@ def add_post_view(post_id):
 @app.route("/posts/<post_id>/likes", methods=["POST"])
 @jwt_required()
 def add_post_like(post_id):
-    id = User.query.filter_by(username=get_jwt_identity()).first().id
+    event_author_id = User.query.filter_by(username=get_jwt_identity()).first().id
+    post_author_id = call_grpc_get_post_by_id(post_id).user_id
 
     message = {
         'post_id': post_id,
+        'post_author_id': post_author_id,
         'liked_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'event_author': id
+        'event_author_id': event_author_id
     }
     producer.send('post_likes', message)
     return jsonify({'success': True})

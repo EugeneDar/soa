@@ -13,7 +13,8 @@ from api.statistics.statistics_pb2_grpc import StatisticsServiceServicer, add_St
 from util.util import clickhouse_request
 from util.templates import (
     GET_TOTAL_VIEWS_AND_LIKES_TEMPLATE,
-    GET_TOP_POSTS_TEMPLATE
+    GET_TOP_POSTS_TEMPLATE,
+    GET_TOP_USERS_TEMPLATE
 )
 
 
@@ -29,23 +30,24 @@ class StatisticsService(StatisticsServiceServicer):
             query = GET_TOP_POSTS_TEMPLATE.format(table_name='post_likes')
             result = clickhouse_request(query)
             return TopPostsResponse(posts=[
-                Post(post_id=result[i][0], views=0, likes=int(result[i][1]))
+                Post(post_id=result[i][0], likes=int(result[i][1]))
                 for i in range(len(result))
             ])
         else:
             query = GET_TOP_POSTS_TEMPLATE.format(table_name='post_views')
             result = clickhouse_request(query)
             return TopPostsResponse(posts=[
-                Post(post_id=result[i][0], views=int(result[i][1]), likes=0)
+                Post(post_id=result[i][0], views=int(result[i][1]))
                 for i in range(len(result))
             ])
 
     def GetTopUsers(self, request, context):
-        top_users = [
-            User(user_id=str(index), views=index, likes=index)
-            for index in range(3)
-        ]
-        return TopUsersResponse(users=top_users)
+        query = GET_TOP_USERS_TEMPLATE.format(table_name='post_likes')
+        result = clickhouse_request(query)
+        return TopUsersResponse(users=[
+            User(user_id=result[i][0], likes=int(result[i][1]))
+            for i in range(len(result))
+        ])
 
 
 def serve():

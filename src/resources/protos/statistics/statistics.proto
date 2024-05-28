@@ -27,6 +27,7 @@ message TopPostsRequest {
 
 message Post {
     string post_id = 1;
+    string author_id = 2;
     int64 views = 3;
     int64 likes = 4;
 }
