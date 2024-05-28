@@ -245,7 +245,7 @@ def get_top_posts():
         posts = [
             {
                 'post_id': p.post_id,
-                'author_username': User.query.filter_by(id=p.author_id).first().username,
+                'author_username': User.query.filter_by(id=call_grpc_get_post_by_id(p.post_id).user_id).first().username,
                 'likes': p.likes
             }
             for p in response.posts
@@ -254,7 +254,7 @@ def get_top_posts():
         posts = [
             {
                 'post_id': p.post_id,
-                'author_username': User.query.filter_by(id=p.author_id).first().username,
+                'author_username': User.query.filter_by(id=call_grpc_get_post_by_id(p.post_id).user_id).first().username,
                 'views': p.views
             }
             for p in response.posts
