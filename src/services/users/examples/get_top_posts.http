@@ -1,0 +1,8 @@
+### Get top posts [Sorted by likes]
+GET http://localhost:8000/posts/top?sort_by=likes
+Authorization: Bearer <access_token>
+
+
+### Get top posts [Sorted by views]
+GET http://localhost:8000/posts/top?sort_by=views
+Authorization: Bearer <access_token>
