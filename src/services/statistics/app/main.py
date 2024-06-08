@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 import grpc
 
-from api.statistics.statistics_pb2 import (
+from .api.statistics.statistics_pb2 import (
     TopPostsRequest,
     ViewsAndLikesResponse,
     TopPostsResponse,
@@ -9,9 +9,9 @@ from api.statistics.statistics_pb2 import (
     Post,
     User,
 )
-from api.statistics.statistics_pb2_grpc import StatisticsServiceServicer, add_StatisticsServiceServicer_to_server
-from util.util import clickhouse_request
-from util.templates import (
+from .api.statistics.statistics_pb2_grpc import StatisticsServiceServicer, add_StatisticsServiceServicer_to_server
+from .util.util import clickhouse_request
+from .util.templates import (
     GET_TOTAL_VIEWS_AND_LIKES_TEMPLATE,
     GET_TOP_POSTS_TEMPLATE,
     GET_TOP_USERS_TEMPLATE

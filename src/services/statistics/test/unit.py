@@ -1,5 +1,3 @@
-import sys
-import os
 import unittest
 
 from ..app.util.util import parse_http_response
@@ -8,6 +6,7 @@ from ..app.main import (
     build_top_posts_responses,
     build_top_users_responses
 )
+
 
 class TestStatistics(unittest.TestCase):
 
@@ -30,8 +29,8 @@ class TestStatistics(unittest.TestCase):
                 ['10', '20']
             ]
         )
-        self.assertEquals(response.views, 10)
-        self.assertEquals(response.likes, 20)
+        self.assertEqual(response.views, 10)
+        self.assertEqual(response.likes, 20)
 
     def test_build_top_posts_response(self):
         responses = build_top_posts_responses(
@@ -40,10 +39,10 @@ class TestStatistics(unittest.TestCase):
             ],
             'likes'
         )
-        self.assertEquals(len(responses), 1)
-        self.assertEquals(responses[0].post_id, 'abc')
-        self.assertEquals(responses[0].views, 0)
-        self.assertEquals(responses[0].likes, 1)
+        self.assertEqual(len(responses.posts), 1)
+        self.assertEqual(responses.posts[0].post_id, 'abc')
+        self.assertEqual(responses.posts[0].views, 0)
+        self.assertEqual(responses.posts[0].likes, 1)
 
         responses = build_top_posts_responses(
             [
@@ -53,15 +52,15 @@ class TestStatistics(unittest.TestCase):
             ],
             'views'
         )
-        self.assertEquals(len(responses), 3)
+        self.assertEqual(len(responses.posts), 3)
         expected_data = [
             ('abc', 1),
             ('def', 10),
             ('ijk', 100),
         ]
-        for response, (post_id, views) in zip(responses, expected_data):
-            self.assertEquals(response.post_id, post_id)
-            self.assertEquals(response.views, views)
+        for response, (post_id, views) in zip(responses.posts, expected_data):
+            self.assertEqual(response.post_id, post_id)
+            self.assertEqual(response.views, views)
 
     def test_build_top_users_responses(self):
         responses = build_top_users_responses(
@@ -69,9 +68,9 @@ class TestStatistics(unittest.TestCase):
                 ['abacaba', 100500]
             ]
         )
-        self.assertEquals(len(responses), 1)
-        self.assertEquals(responses[0].user_id, 'abacaba')
-        self.assertEquals(responses[0].likes, 100500)
+        self.assertEqual(len(responses.users), 1)
+        self.assertEqual(responses.users[0].user_id, 'abacaba')
+        self.assertEqual(responses.users[0].likes, 100500)
 
 
 if __name__ == '__main__':
