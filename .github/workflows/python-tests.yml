@@ -44,11 +44,11 @@ jobs:
     - name: Install Go dependencies
       if: matrix.go-version
       run: |
-        cd soa/src/services/posts/app
+        cd src/services/posts/app
         if [ -f go.mod ]; then go mod tidy; fi
 
     - name: Run Go Tests
       if: matrix.go-version
       run: |
-        cd soa/src/services/posts/app
+        cd src/services/posts/app
         go test ./...
