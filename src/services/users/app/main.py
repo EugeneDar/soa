@@ -10,8 +10,12 @@ from kafka import KafkaProducer
 from database.database import db
 from util.util import get_field, password_hasher, connect_to_db, proto_post_to_dict
 from schemas.user_schema import UserSchema
+
 from api.posts.posts_pb2 import CreatePostRequest, UpdatePostRequest, DeletePostRequest, GetPostByIdRequest, ListPostsRequest
 from api.posts.posts_pb2_grpc import PostServiceStub
+
+from api.statistics.statistics_pb2 import ViewsAndLikesRequest, TopPostsRequest, Empty
+from api.statistics.statistics_pb2_grpc import StatisticsServiceStub
 
 # Flask
 app = Flask(__name__)
@@ -26,6 +30,15 @@ user_schema = UserSchema()
 
 # Kafka
 producer = None  # init in main
+
+
+# TODO move this function to the separate file
+def call_grpc_get_post_by_id(post_id):
+    with grpc.insecure_channel('posts-service:5300') as channel:
+        stub = PostServiceStub(channel)
+        return stub.GetPostById(GetPostByIdRequest(
+            id=post_id
+        ))
 
 
 @app.route('/healthcheck')
@@ -144,12 +157,7 @@ def delete_post(post_id):
 @app.route("/posts/<post_id>", methods=["GET"])
 @jwt_required()
 def get_post_by_id(post_id):
-    with grpc.insecure_channel('posts-service:5300') as channel:
-        stub = PostServiceStub(channel)
-        response = stub.GetPostById(GetPostByIdRequest(
-            id=post_id
-        ))
-
+    response = call_grpc_get_post_by_id(post_id)
     return jsonify(proto_post_to_dict(response))
 
 
@@ -183,12 +191,14 @@ def list_posts():
 @app.route("/posts/<post_id>/views", methods=["POST"])
 @jwt_required()
 def add_post_view(post_id):
-    username = User.query.filter_by(username=get_jwt_identity()).first().username
+    event_author_id = User.query.filter_by(username=get_jwt_identity()).first().id
+    post_author_id = call_grpc_get_post_by_id(post_id).user_id
 
     message = {
         'post_id': post_id,
+        'post_author_id': post_author_id,
         'viewed_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'event_author': username
+        'event_author_id': event_author_id
     }
     producer.send('post_views', message)
     return jsonify({'success': True})
@@ -197,15 +207,75 @@ def add_post_view(post_id):
 @app.route("/posts/<post_id>/likes", methods=["POST"])
 @jwt_required()
 def add_post_like(post_id):
-    username = User.query.filter_by(username=get_jwt_identity()).first().username
+    event_author_id = User.query.filter_by(username=get_jwt_identity()).first().id
+    post_author_id = call_grpc_get_post_by_id(post_id).user_id
 
     message = {
         'post_id': post_id,
+        'post_author_id': post_author_id,
         'liked_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'event_author': username
+        'event_author_id': event_author_id
     }
     producer.send('post_likes', message)
     return jsonify({'success': True})
+
+
+@app.route("/posts/<post_id>/statistics", methods=["GET"])
+def get_post_statistics(post_id):
+    with grpc.insecure_channel('statistics-service:5100') as channel:
+        stub = StatisticsServiceStub(channel)
+        response = stub.GetTotalViewsAndLikes(ViewsAndLikesRequest(
+            post_id=post_id
+        ))
+    return jsonify({'post_id': post_id, 'views': response.views, 'likes': response.likes})
+
+
+@app.route("/posts/top", methods=["GET"])
+def get_top_posts():
+    sort_by_param = request.args.get('sort_by', 'likes').upper()
+    sort_by = TopPostsRequest.SortBy.LIKES if sort_by_param == 'LIKES' else TopPostsRequest.SortBy.VIEWS
+
+    with grpc.insecure_channel('statistics-service:5100') as channel:
+        stub = StatisticsServiceStub(channel)
+        response = stub.GetTopPosts(TopPostsRequest(
+            sort_by=sort_by
+        ))
+
+    if sort_by_param == 'LIKES':
+        posts = [
+            {
+                'post_id': p.post_id,
+                'author_username': User.query.filter_by(id=call_grpc_get_post_by_id(p.post_id).user_id).first().username,
+                'likes': p.likes
+            }
+            for p in response.posts
+        ]
+    else:
+        posts = [
+            {
+                'post_id': p.post_id,
+                'author_username': User.query.filter_by(id=call_grpc_get_post_by_id(p.post_id).user_id).first().username,
+                'views': p.views
+            }
+            for p in response.posts
+        ]
+    return jsonify(posts)
+
+
+@app.route("/users/top", methods=["GET"])
+def get_top_users():
+    with grpc.insecure_channel('statistics-service:5100') as channel:
+        stub = StatisticsServiceStub(channel)
+        response = stub.GetTopUsers(Empty())
+
+    users = [
+        {
+            'username': User.query.filter_by(id=u.user_id).first().username,
+            'likes': u.likes
+        }
+        for u in response.users
+    ]
+    return jsonify(users)
 
 
 if __name__ == "__main__":

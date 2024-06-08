@@ -29,7 +29,8 @@ Connect via `clickhouse-client` and execute code below:
 CREATE TABLE post_views_kafka (
     post_id String,
     viewed_at DateTime,
-    event_author String
+    post_author_id String,
+    event_author_id String
 ) ENGINE = Kafka
 SETTINGS kafka_broker_list = 'kafka:29092',
          kafka_topic_list = 'post_views',
@@ -39,7 +40,8 @@ SETTINGS kafka_broker_list = 'kafka:29092',
 CREATE TABLE post_likes_kafka (
     post_id String,
     liked_at DateTime,
-    event_author String
+    post_author_id String,
+    event_author_id String
 ) ENGINE = Kafka
 SETTINGS kafka_broker_list = 'kafka:29092',
          kafka_topic_list = 'post_likes',
@@ -49,14 +51,16 @@ SETTINGS kafka_broker_list = 'kafka:29092',
 CREATE TABLE post_views (
     post_id String,
     viewed_at DateTime,
-    event_author String
+    post_author_id String,
+    event_author_id String
 ) ENGINE = MergeTree()
 ORDER BY post_id;
 
 CREATE TABLE post_likes (
     post_id String,
     liked_at DateTime,
-    event_author String
+    post_author_id String,
+    event_author_id String
 ) ENGINE = MergeTree()
 ORDER BY post_id;
 
@@ -64,19 +68,21 @@ CREATE MATERIALIZED VIEW post_views_mv TO post_views
 AS SELECT 
     post_id, 
     viewed_at,
-    event_author
+    post_author_id,
+    event_author_id
 FROM post_views_kafka;
 
 CREATE MATERIALIZED VIEW post_likes_mv TO post_likes
 AS SELECT 
     post_id, 
     liked_at,
-    event_author
+     post_author_id,
+    event_author_id
 FROM post_likes_kafka;
 ```
 
 Use this to check tables content:
 ```
-SELECT * FROM post_views_mv;
-SELECT * FROM post_likes_mv;
+SELECT * FROM post_views;
+SELECT * FROM post_likes;
 ```
