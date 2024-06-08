@@ -27,3 +27,4 @@ jobs:
     - name: Run Tests
       run: |
         python -m unittest src/services/statistics/test/unit.py
+        python -m unittest src/services/users/test/unit.py
