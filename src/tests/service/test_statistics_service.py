@@ -6,7 +6,7 @@ import unittest
 
 class TestMyService(unittest.TestCase):
     users_service_url = 'http://localhost:8000'
-    path_to_docker = './src/services/docker-compose.yml'
+    path_to_docker = './src/services'
 
     @classmethod
     def setUpClass(cls):
