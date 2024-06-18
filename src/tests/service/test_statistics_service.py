@@ -4,7 +4,8 @@ import unittest
 import requests
 from testcontainers.compose import DockerCompose
 
-compose_file_path = os.path.abspath('../src/services')
+# compose_file_path = os.path.abspath('./src/services/docker-compose.yml')
+compose_file_path = os.path.abspath('./src/services')
 
 
 class UserServiceTests(unittest.TestCase):
