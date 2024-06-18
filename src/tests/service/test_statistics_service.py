@@ -10,7 +10,7 @@ class TestMyService(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        time.sleep(5)
+        time.sleep(10)
 
     @classmethod
     def tearDownClass(cls):
