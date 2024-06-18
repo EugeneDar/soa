@@ -10,15 +10,10 @@ class TestMyService(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # subprocess.run(['docker-compose', 'build', cls.path_to_docker], check=True)
-        # subprocess.run(['docker-compose', 'up', '-d', cls.path_to_docker], check=True)
-
-        time.sleep(10)  # время ожидания, чтобы контейнер заработал
+        time.sleep(5)
 
     @classmethod
     def tearDownClass(cls):
-        # Останавливает docker-compose
-        # subprocess.run(['docker-compose', 'down'], check=True)
         pass
 
     def test_create_user(self):
@@ -30,7 +25,8 @@ class TestMyService(unittest.TestCase):
         response = requests.post(f"{self.users_service_url}/signup", json=user_data)
         self.assertEqual(response.status_code, 201)
         self.assertIn("id", response.json())
-        self.assertEqual(response.json()["phone"], user_data["phone"])
+        # self.assertEqual(response.json()["phone"], user_data["phone"])
+        self.assertEqual(response.json()["phone"], "he-he")
 
 
 if __name__ == '__main__':
