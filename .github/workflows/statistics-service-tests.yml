@@ -28,4 +28,7 @@ jobs:
 
     - name: Run Statistics Service Tests
       run: |
-        python -m unittest src/tests/service/test_statistics_service.py
+        cd src/services
+        docker-compose up -d --build
+        cd ../../src/tests/service
+        python -m unittest test_statistics_service.py
