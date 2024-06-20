@@ -11,11 +11,11 @@ from database.database import db
 from util.util import get_field, password_hasher, connect_to_db, proto_post_to_dict
 from schemas.user_schema import UserSchema
 
-from api.posts.posts_pb2 import CreatePostRequest, UpdatePostRequest, DeletePostRequest, GetPostByIdRequest, ListPostsRequest
-from api.posts.posts_pb2_grpc import PostServiceStub
+from .api.posts.posts_pb2 import CreatePostRequest, UpdatePostRequest, DeletePostRequest, GetPostByIdRequest, ListPostsRequest
+from .api.posts.posts_pb2_grpc import PostServiceStub
 
-from api.statistics.statistics_pb2 import ViewsAndLikesRequest, TopPostsRequest, Empty
-from api.statistics.statistics_pb2_grpc import StatisticsServiceStub
+from .api.statistics.statistics_pb2 import ViewsAndLikesRequest, TopPostsRequest, Empty
+from .api.statistics.statistics_pb2_grpc import StatisticsServiceStub
 
 # Flask
 app = Flask(__name__)
