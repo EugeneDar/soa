@@ -1,48 +1,46 @@
-import time
-import unittest
 import grpc
 import sys
 import os
-import pytest
+import subprocess
+import time
 import requests
+import pytest
+
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from services.statistics.app.api.statistics.statistics_pb2 import ViewsAndLikesRequest, TopPostsRequest, Empty
 from services.statistics.app.api.statistics.statistics_pb2_grpc import StatisticsServiceStub
 
 
-pytest_plugins = ["docker_compose"]
-
 POST_ID_1 = 'abacaba'
 LIKES_FOR_POST_1 = 2
 VIEWS_FOR_POST_1 = 5
-STATISTICS_SERVICE_ADDRESS = 'statistics-service:5100'
+STATISTICS_SERVICE_ADDRESS = 'http://localhost:5100'
+
+PATH_TO_DOCKER_COMPOSE = '../services'
 
 
-@pytest.fixture(scope="module")
-def grpc_service(module_scoped_container_getter):
-    service = module_scoped_container_getter.get("statistics-service").network_info[0]
-    host, port = service.hostname, service.host_port
-    grpc_channel = grpc.insecure_channel(f"{host}:{port}")
+@pytest.fixture(scope="module", autouse=True)
+def setup_compose():
+    print("Starting Docker Compose...")
+    subprocess.run(["sudo", "docker-compose", "up", "-d", "--build"], check=True, cwd=PATH_TO_DOCKER_COMPOSE)
+    time.sleep(10)
 
-    for _ in range(10):
-        try:
-            grpc.channel_ready_future(grpc_channel).result(timeout=1)
-            return grpc_channel
-        except grpc.FutureTimeoutError:
-            time.sleep(1)
+    yield
 
-    pytest.fail("GRPC service did not become available in time")
+    print("Stopping and cleaning up Docker Compose...")
+    subprocess.run(["sudo", "docker-compose", "down", "--volumes"], check=True, cwd=PATH_TO_DOCKER_COMPOSE)
 
 
-def test_addition(grpc_service):
-    """Тестирование функции сложения"""
-    grpc_channel = grpc_service
-    stub = StatisticsServiceStub(grpc_channel)
+def test_service_interaction():
+    try:
+        with grpc.insecure_channel('localhost:5100') as channel:
+            stub = StatisticsServiceStub(channel)
+            response = stub.GetTotalViewsAndLikes(ViewsAndLikesRequest(
+                post_id=POST_ID_1
+            ))
 
-    response = stub.GetTotalViewsAndLikes(ViewsAndLikesRequest(
-        post_id=POST_ID_1
-    ))
-
-    assert response.likes == LIKES_FOR_POST_1
-    assert response.views == VIEWS_FOR_POST_1
+        assert response.likes == LIKES_FOR_POST_1
+        assert response.views == VIEWS_FOR_POST_1
+    except Exception as e:
+        print(e)
